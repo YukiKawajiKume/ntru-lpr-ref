@@ -5,10 +5,6 @@
 
 void Decode(uint16 *out,const unsigned char *S,const uint16 *M,long long len)
 {
-    for(int i = 0; i<len; ++i){
-        printf("%02X ", S[i]);
-    }
-    printf("\n");
     
   if (len == 1) {
     if (M[0] == 1)
