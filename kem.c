@@ -641,8 +641,18 @@ static void Rounded_decode(Fq *r,const unsigned char *s)
     int i;
 
     for (i = 0;i < p;++i) M[i] = (q+2)/3;
+
     Decode(R,s,M,p);
+
     for (i = 0;i < p;++i) r[i] = R[i]*3-q12;
+
+//    for (int i = 0; i < p; ++i)
+//    {
+//        printf("%02X", r[i]);
+//    }
+//
+//    printf("\n------------\n");
+
 }
 
 /* ----- encoding top polynomials */
@@ -848,9 +858,9 @@ static void Hide(unsigned char *c,unsigned char *r_enc,const Inputs r,const unsi
 #ifdef KAT
     {
     int j;
-    printf("Hide r_enc: ");
-    for (j = 0;j < Inputs_bytes;++j) printf("%02x",r_enc[j]);
-    printf("\n");
+//    printf("Hide r_enc: ");
+//    for (j = 0;j < Inputs_bytes;++j) printf("%02x",r_enc[j]);
+//    printf("\n");
   }
 #endif
     ZEncrypt(c,r,pk); c += Ciphertexts_bytes;
