@@ -432,9 +432,25 @@ static void Encrypt(Fq *B,int8 *T,const int8 *r,const Fq *G,const Fq *A,const sm
     int i;
 
     Rq_mult_small(bG,G,b);
+
+
+
     Round(B,bG);
+
     Rq_mult_small(bA,A,b);
-    for (i = 0;i < I;++i) T[i] = Top(Fq_freeze(bA[i]+r[i]*q12));
+
+
+    for (i = 0;i < I;++i) {
+
+        T[i] = Top(Fq_freeze(bA[i]+r[i]*q12));
+    };
+
+
+//    for(i=0; i<I;++i){
+//        printf("%02X", T[i]);
+//    }
+//    printf("\n");
+
 }
 
 /* r = Decrypt((B,T),a) */
@@ -511,6 +527,10 @@ static void Generator(Fq *G,const unsigned char *k)
     int i;
 
     Expand(L,k);
+
+
+
+
     for (i = 0;i < p;++i) G[i] = uint32_mod_uint14(L[i],q)-q12;
 }
 
@@ -525,6 +545,12 @@ static void HashShort(small *out,const Inputs r)
     Hash_prefix(h,5,s,sizeof s);
     Expand(L,h);
     Short_fromlist(out,L);
+//
+//    for (int i = 0; i < p; ++i)
+//    {
+//        printf("%02X", out[i]);
+//    }
+//    printf("\n");
 }
 
 #endif
@@ -549,8 +575,17 @@ static void XEncrypt(Fq *B,int8 *T,const int8 *r,const unsigned char *S,const Fq
     Fq G[p];
     small b[p];
 
+//    printf("Encrypt\n");
     Generator(G,S);
+
+//    for (int i = 0; i < p; ++i)
+//    {
+//        printf("%02X", G[i]);
+//    }
+//    printf("\n");
+
     HashShort(b,r);
+
     Encrypt(B,T,r,G,A,b);
 }
 
@@ -767,9 +802,17 @@ static void ZEncrypt(unsigned char *c,const Inputs r,const unsigned char *pk)
     int8 T[I];
 
     Rounded_decode(A,pk+Seeds_bytes);
+
     XEncrypt(B,T,r,pk,A);
-    Rounded_encode(c,B); c += Rounded_bytes;
+
+
+    Rounded_encode(c,B);
+
+
+    c += Rounded_bytes;
+
     Top_encode(c,T);
+
 }
 
 /* r = ZDecrypt(C,sk) */
@@ -780,6 +823,7 @@ static void ZDecrypt(Inputs r,const unsigned char *c,const unsigned char *sk)
     int8 T[I];
 
     Small_decode(a,sk);
+
     Rounded_decode(B,c);
     Top_decode(T,c+Rounded_bytes);
     XDecrypt(r,B,T,a);
@@ -808,6 +852,9 @@ static void HashConfirm(unsigned char *h,const unsigned char *r,const unsigned c
     for (i = 0;i < Hash_bytes;++i) x[Inputs_bytes+i] = cache[i];
 #endif
     Hash_prefix(h,2,x,sizeof x);
+
+
+
 }
 
 /* ----- session-key hash */
@@ -823,12 +870,14 @@ static void HashSession(unsigned char *k,int b,const unsigned char *y,const unsi
   for (i = 0;i < Ciphertexts_bytes+Confirm_bytes;++i) x[Hash_bytes+i] = z[i];
 #else
     unsigned char x[Inputs_bytes+Ciphertexts_bytes+Confirm_bytes];
+    printf("%d",Confirm_bytes);
     int i;
 
     for (i = 0;i < Inputs_bytes;++i) x[i] = y[i];
     for (i = 0;i < Ciphertexts_bytes+Confirm_bytes;++i) x[Inputs_bytes+i] = z[i];
 #endif
     Hash_prefix(k,b,x,sizeof x);
+
 }
 
 /* ----- Streamlined NTRU Prime and NTRU LPRime */
@@ -863,8 +912,12 @@ static void Hide(unsigned char *c,unsigned char *r_enc,const Inputs r,const unsi
 //    printf("\n");
   }
 #endif
-    ZEncrypt(c,r,pk); c += Ciphertexts_bytes;
+    ZEncrypt(c,r,pk);
+
+    c += Ciphertexts_bytes;
+
     HashConfirm(c,r_enc,pk,cache);
+
 }
 
 /* c,k = Encap(pk) */
@@ -880,7 +933,10 @@ static void Encap(unsigned char *c,unsigned char *k,const unsigned char *pk)
     Inputs_random(r);
 
     Hide(c,r_enc,r,pk,cache);
+
     HashSession(k,1,r_enc,c);
+
+
 }
 
 /* 0 if matching ciphertext+confirm, else -1 */
